@@ -3,10 +3,12 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { FileSys } from "../api/file_sys";
 import { Button } from "@suid/material";
 import FileTable from "../components/FileTable";
+import { Exiftool } from "../api/exiftool";
 
-function createData(name: string, tags: string, action: string) {
-  return { name, tags, action };
-}
+const createRow = async (name: string) => {
+  const tags = await Exiftool.getXmpSubjects(name);
+  return { name, tags: tags.join(","), action: "A" };
+};
 
 export default function FileTablePage() {
   const [rows, setRows] = createSignal<
@@ -22,7 +24,10 @@ export default function FileTablePage() {
 
     try {
       const { files } = await FileSys.list(dir);
-      setRows(files.map((f) => createData(f, "T", "A")));
+      const rowData = await Promise.all(
+        files.map((f) => createRow(dir + "/" + f)), // TODO: handle path
+      );
+      setRows(rowData);
     } catch (err) {
       console.error(err);
     }
