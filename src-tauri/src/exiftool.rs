@@ -109,7 +109,7 @@ pub fn exiftool_remove_xmp_subject(filename: &str, tags: Vec<String>) -> Result<
 #[tauri::command]
 pub fn exiftool_clear_xmp_subject(filename: &str) -> Result<(), String> {
     let output = Command::new("exiftool")
-        .arg("-XMP:Subject=")
+        .arg("-XMP:Subject--")
         .arg(filename)
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
