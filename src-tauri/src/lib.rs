@@ -25,7 +25,7 @@ pub fn run() {
             greet,
             exiftool::exiftool_get_version,
             exiftool::exiftool_get_xmp_subject,
-            exiftool::exiftool_set_xmp_subject,
+            exiftool::exiftool_add_xmp_subject,
             exiftool::exiftool_remove_xmp_subject,
             exiftool::exiftool_clear_xmp_subject,
         ])

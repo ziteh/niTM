@@ -19,9 +19,9 @@ export class Exiftool {
     }
   }
 
-  public static async setXmpSubjects(filename: string, tags: string[]) {
+  public static async addXmpSubjects(filename: string, tags: string[]) {
     try {
-      await invoke("exiftool_set_xmp_subject", { filename, tags });
+      await invoke("exiftool_add_xmp_subject", { filename, tags });
     } catch (err) {
       throw new Error(err as string);
     }

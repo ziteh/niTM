@@ -51,7 +51,7 @@ pub fn exiftool_get_xmp_subject(filename: &str) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-pub fn exiftool_set_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(), String> {
+pub fn exiftool_add_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(), String> {
     if tags.is_empty() {
         return Err("Tag list cannot be empty".to_string());
     }
