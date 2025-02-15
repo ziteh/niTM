@@ -1,7 +1,8 @@
 import { createSignal } from "solid-js";
 import logo from "./assets/logo.svg";
 import "./App.css";
-import { Exiftool } from "./api";
+import { Exiftool } from "./api/exiftool";
+import { TagDatabase } from "./api/tag-database";
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
@@ -10,6 +11,7 @@ function App() {
 
   async function greet() {
     Exiftool.getXmpSubjects(name()).then((kw) => console.log(kw));
+    TagDatabase.getTags().then((t) => console.log(t));
   }
 
   async function exiftool() {

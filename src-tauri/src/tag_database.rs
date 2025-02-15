@@ -8,7 +8,7 @@ pub struct TagNode {
 }
 
 #[tauri::command]
-pub fn tm_get_tags() -> Result<Vec<TagNode>, String> {
+pub fn tag_db_get_tags() -> Result<Vec<TagNode>, String> {
     let tt1 = TagNode {
         name: String::from("TT1"),
         rule: String::from("N"),

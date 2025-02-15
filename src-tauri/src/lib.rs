@@ -1,7 +1,7 @@
 use tauri::Manager;
 
 mod exiftool;
-mod tag_manager;
+mod tag_database;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -29,7 +29,7 @@ pub fn run() {
             exiftool::exiftool_add_xmp_subject,
             exiftool::exiftool_remove_xmp_subject,
             exiftool::exiftool_clear_xmp_subject,
-            tag_manager::tm_get_tags,
+            tag_database::tag_db_get_tags,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
