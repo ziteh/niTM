@@ -25,6 +25,7 @@ pub fn run() {
             greet,
             exiftool::exiftool_get_version,
             exiftool::exiftool_get_xmp_subject,
+            exiftool::exiftool_set_xmp_subject,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

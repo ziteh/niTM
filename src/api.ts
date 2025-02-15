@@ -18,4 +18,12 @@ export class Exiftool {
       throw new Error(err as string);
     }
   }
+
+  public static async setXmpSubjects(filename: string, tags: string[]) {
+    try {
+      await invoke("exiftool_set_xmp_subject", { filename, tags });
+    } catch (err) {
+      throw new Error(err as string);
+    }
+  }
 }

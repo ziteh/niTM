@@ -13,7 +13,7 @@ function App() {
   }
 
   async function exiftool() {
-    Exiftool.getVersion().then((ver) => setVer(ver));
+    Exiftool.setXmpSubjects(name(), ["tt1", "tt2", "tt3"]);
   }
 
   return (
