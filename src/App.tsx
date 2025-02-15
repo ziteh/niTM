@@ -10,8 +10,8 @@ function App() {
   const [name, setName] = createSignal("");
 
   async function greet() {
-    Exiftool.getXmpSubjects(name()).then((kw) => console.log(kw));
-    TagDatabase.getTags().then((t) => console.log(t));
+    // Exiftool.getXmpSubjects(name()).then((kw) => console.log(kw));
+    TagDatabase.getTags(name()).then((t) => console.log(t));
   }
 
   async function exiftool() {
