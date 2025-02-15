@@ -12,7 +12,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             greet,
-            exiftool::exiftool_get_version
+            exiftool::exiftool_get_version,
+            exiftool::exiftool_get_xmp_subject,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

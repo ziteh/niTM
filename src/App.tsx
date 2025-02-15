@@ -10,7 +10,12 @@ function App() {
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name: name() }));
+    // setGreetMsg(await invoke("greet", { name: name() }));
+
+    invoke("exiftool_get_xmp_subject", { filename: name() }).then((kw) => {
+      console.log(kw);
+      setGreetMsg(kw as string);
+    });
   }
 
   async function exiftool() {
