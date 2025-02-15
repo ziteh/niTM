@@ -26,4 +26,20 @@ export class Exiftool {
       throw new Error(err as string);
     }
   }
+
+  public static async removeXmpSubjects(filename: string, tags: string[]) {
+    try {
+      await invoke("exiftool_remove_xmp_subject", { filename, tags });
+    } catch (err) {
+      throw new Error(err as string);
+    }
+  }
+
+  public static async clearXmpSubjects(filename: string) {
+    try {
+      await invoke("exiftool_clear_xmp_subject", { filename });
+    } catch (err) {
+      throw new Error(err as string);
+    }
+  }
 }

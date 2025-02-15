@@ -13,7 +13,7 @@ function App() {
   }
 
   async function exiftool() {
-    Exiftool.setXmpSubjects(name(), ["tt1", "tt2", "tt3"]);
+    Exiftool.clearXmpSubjects(name());
   }
 
   return (

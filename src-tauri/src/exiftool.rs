@@ -77,3 +77,50 @@ pub fn exiftool_set_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(),
 
     Ok(())
 }
+
+#[tauri::command]
+pub fn exiftool_remove_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(), String> {
+    if tags.is_empty() {
+        return Err("Tag list cannot be empty".to_string());
+    }
+
+    let mut command = Command::new("exiftool");
+
+    for tag in tags {
+        command.arg(format!("-XMP:Subject-={}", tag));
+    }
+
+    let output = command
+        .arg(filename)
+        .output()
+        .map_err(|e| format!("Failed to execute command: {}", e))?;
+
+    if !output.status.success() {
+        let stderr_msg = String::from_utf8_lossy(&output.stderr);
+        return Err(format!(
+            "Command failed with status {}: {}",
+            output.status, stderr_msg
+        ));
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn exiftool_clear_xmp_subject(filename: &str) -> Result<(), String> {
+    let output = Command::new("exiftool")
+        .arg("-XMP:Subject=")
+        .arg(filename)
+        .output()
+        .map_err(|e| format!("Failed to execute command: {}", e))?;
+
+    if !output.status.success() {
+        let stderr_msg = String::from_utf8_lossy(&output.stderr);
+        return Err(format!(
+            "Command failed with status {}: {}",
+            output.status, stderr_msg
+        ));
+    }
+
+    Ok(())
+}
