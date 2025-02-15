@@ -4,6 +4,7 @@ import "./App.css";
 import { Exiftool } from "./api/exiftool";
 import { TagDatabase } from "./api/tag-database";
 import { FileSys } from "./api/file_sys";
+import { Button } from "@suid/material";
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
@@ -36,6 +37,7 @@ function App() {
         </a>
       </div>
       <p>Click on the Tauri, Vite, and Solid logos to learn more.</p>
+      <Button variant="contained">Hi</Button>
 
       <button
         on:click={() => {

@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@suid/icons-material':
+        specifier: ^0.8.1
+        version: 0.8.1(solid-js@1.9.4)
+      '@suid/material':
+        specifier: ^0.18.0
+        version: 0.18.0(solid-js@1.9.4)
+      '@suid/vite-plugin':
+        specifier: ^0.3.1
+        version: 0.3.1(vite@6.1.0(@types/node@22.13.2)(jiti@2.4.2)(yaml@2.7.0))
       '@tauri-apps/api':
         specifier: ^2
         version: 2.2.0
@@ -37,13 +46,13 @@ importers:
         specifier: 3.5.0
         version: 3.5.0
       typescript:
-        specifier: ~5.6.2
+        specifier: ~5.6.3
         version: 5.6.3
       vite:
-        specifier: ^6.0.3
+        specifier: ^6.1.0
         version: 6.1.0(@types/node@22.13.2)(jiti@2.4.2)(yaml@2.7.0)
       vite-plugin-solid:
-        specifier: ^2.11.0
+        specifier: ^2.11.1
         version: 2.11.1(solid-js@1.9.4)(vite@6.1.0(@types/node@22.13.2)(jiti@2.4.2)(yaml@2.7.0))
 
 packages:
@@ -366,6 +375,9 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
+  '@popperjs/core@2.11.8':
+    resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+
   '@rollup/rollup-android-arm-eabi@4.34.6':
     resolution: {integrity: sha512-+GcCXtOQoWuC7hhX1P00LqjjIiS/iOouHXhMdiDSnq/1DGTox4SpUvO52Xm+div6+106r+TcvOeo/cxvyEyTgg==}
     cpu: [arm]
@@ -460,6 +472,49 @@ packages:
     resolution: {integrity: sha512-0PVwmgzZ8+TZ9oGBmdZoQVXflbvuwzN/HRclujpl4N/q3i+y0lqLw8n1bXA8ru3sApDjlmONaNAuYr38y1Kr9w==}
     cpu: [x64]
     os: [win32]
+
+  '@suid/base@0.10.1':
+    resolution: {integrity: sha512-zP9Ujdd/9AbZnn/kDMC+mMdBrE8i7U4q9sCKwGw3bLx0FQ+utPxRV+9NQ8KLb0q0W5yleAHfjP0nycBAmL+DHQ==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/css@0.4.0':
+    resolution: {integrity: sha512-yzHAlf1CVi7n0SvUrMgs8Z49UiS9669+td1w1frekhRQuRbkXhHoyJkvovaDVJlWRmCPA8Q0f1OTr0uDCUg9mQ==}
+
+  '@suid/icons-material@0.8.1':
+    resolution: {integrity: sha512-QK1fcIuOKhHaOjT33yuKJSiUtRFVdcVBF9jzlY+xEc3Sw7qW+QpVs1iEPiIccQpZqfKDs48obvFC0alKk5aeCA==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/material@0.18.0':
+    resolution: {integrity: sha512-rx+CDdu0hy36do1TsfKYxn8VlsGB+mcehzND69i03cGSsfrspToyY6h1TNe9zxv0N9Bf2AbHlcgD/OoPrshOSQ==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/styled-engine@0.8.1':
+    resolution: {integrity: sha512-teVk82yH1P9Ce1fJcvlwDjjKxrpXL9ecmK5uBuxbNqUh2yHyrXIqw+mnPVzq6KDHQEu5ODDFFqH9KwWLl8DODQ==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/system@0.13.0':
+    resolution: {integrity: sha512-TILoCyQBPrnUl4kjOqHxvSLIjC2Z79vLtQ6T/osX0N72s+Q5NmHnKSvwc/tHLfPOCQKsKiEYNhkhikGCJKY/OA==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/types@0.7.1':
+    resolution: {integrity: sha512-VPRRMUcWS/IkkFoQa2FHJnhyUrrRs6Sic3rIcuz+EU8DfOMFqhDBZIQkNdeMB+5T8iHN0PtYlW8+uQzxTNJq0Q==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/utils@0.10.1':
+    resolution: {integrity: sha512-a8jHOL11nUibhGi1TsJKLGsNZ5NdHYwmNTAd3B/Z0TTaxX6Pg6CY3X8jqMWbrrXkHctwKokKEeDkVyrlQ7sP8g==}
+    peerDependencies:
+      solid-js: ^1.8.22
+
+  '@suid/vite-plugin@0.3.1':
+    resolution: {integrity: sha512-IXbYxRZr4ie4iCYlqBM2znLV/RKrIT2zpaYYI5k1DbJHXVW5nXniCoii7BlvM2SonOKlsQ6R8CNI2X3bjAmoVQ==}
+    peerDependencies:
+      vite: ^5.0.0
 
   '@tauri-apps/api@2.2.0':
     resolution: {integrity: sha512-R8epOeZl1eJEl603aUMIGb4RXlhPjpgxbGVEaqY+0G5JG9vzV/clNlzTeqc+NLYXVqXcn8mb4c5b9pJIUDEyAg==}
@@ -630,6 +685,10 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
+
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -1596,6 +1655,8 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@popperjs/core@2.11.8': {}
+
   '@rollup/rollup-android-arm-eabi@4.34.6':
     optional: true
 
@@ -1652,6 +1713,70 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.34.6':
     optional: true
+
+  '@suid/base@0.10.1(solid-js@1.9.4)':
+    dependencies:
+      '@popperjs/core': 2.11.8
+      '@suid/css': 0.4.0
+      '@suid/system': 0.13.0(solid-js@1.9.4)
+      '@suid/types': 0.7.1(solid-js@1.9.4)
+      '@suid/utils': 0.10.1(solid-js@1.9.4)
+      clsx: 2.1.1
+      solid-js: 1.9.4
+
+  '@suid/css@0.4.0': {}
+
+  '@suid/icons-material@0.8.1(solid-js@1.9.4)':
+    dependencies:
+      '@suid/material': 0.18.0(solid-js@1.9.4)
+      solid-js: 1.9.4
+
+  '@suid/material@0.18.0(solid-js@1.9.4)':
+    dependencies:
+      '@suid/base': 0.10.1(solid-js@1.9.4)
+      '@suid/css': 0.4.0
+      '@suid/system': 0.13.0(solid-js@1.9.4)
+      '@suid/types': 0.7.1(solid-js@1.9.4)
+      '@suid/utils': 0.10.1(solid-js@1.9.4)
+      clsx: 2.1.1
+      solid-js: 1.9.4
+
+  '@suid/styled-engine@0.8.1(solid-js@1.9.4)':
+    dependencies:
+      '@suid/css': 0.4.0
+      '@suid/utils': 0.10.1(solid-js@1.9.4)
+      solid-js: 1.9.4
+
+  '@suid/system@0.13.0(solid-js@1.9.4)':
+    dependencies:
+      '@suid/css': 0.4.0
+      '@suid/styled-engine': 0.8.1(solid-js@1.9.4)
+      '@suid/types': 0.7.1(solid-js@1.9.4)
+      '@suid/utils': 0.10.1(solid-js@1.9.4)
+      clsx: 2.1.1
+      csstype: 3.1.3
+      solid-js: 1.9.4
+
+  '@suid/types@0.7.1(solid-js@1.9.4)':
+    dependencies:
+      solid-js: 1.9.4
+
+  '@suid/utils@0.10.1(solid-js@1.9.4)':
+    dependencies:
+      '@suid/types': 0.7.1(solid-js@1.9.4)
+      solid-js: 1.9.4
+
+  '@suid/vite-plugin@0.3.1(vite@6.1.0(@types/node@22.13.2)(jiti@2.4.2)(yaml@2.7.0))':
+    dependencies:
+      '@babel/generator': 7.26.8
+      '@babel/parser': 7.26.8
+      '@babel/traverse': 7.26.8
+      '@babel/types': 7.26.8
+      '@types/babel__generator': 7.6.8
+      '@types/babel__traverse': 7.20.6
+      vite: 6.1.0(@types/node@22.13.2)(jiti@2.4.2)(yaml@2.7.0)
+    transitivePeerDependencies:
+      - supports-color
 
   '@tauri-apps/api@2.2.0': {}
 
@@ -1811,6 +1936,8 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
+
+  clsx@2.1.1: {}
 
   color-convert@2.0.1:
     dependencies:
