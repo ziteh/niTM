@@ -14,7 +14,9 @@ function App() {
   }
 
   async function exiftool() {
-    setVer(await invoke("exiftool_get_version"));
+    invoke("exiftool_get_version")
+      .then((ver) => setVer(ver as string))
+      .catch((err) => console.error(err));
   }
 
   return (
