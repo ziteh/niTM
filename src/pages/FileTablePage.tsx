@@ -21,7 +21,7 @@ export default function FileTablePage() {
     console.log(dir);
 
     try {
-      const files = await FileSys.list(dir);
+      const { files } = await FileSys.list(dir);
       setRows(files.map((f) => createData(f, "T", "A")));
     } catch (err) {
       console.error(err);
