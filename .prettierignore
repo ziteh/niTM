@@ -3,3 +3,5 @@ pnpm-lock.yaml
 
 # Project
 dist/
+src-tauri/target/
+src-tauri/gen/schemas/

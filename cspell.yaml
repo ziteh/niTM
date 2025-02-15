@@ -2,8 +2,15 @@ version: "0.2"
 ignorePaths:
   - node_modules/**
   - pnpm-lock.yaml
+  - Cargo.lock
   - cspell.yaml
   - .commitlintrc.yaml
+  - src-tauri/target/**
+  - src-tauri/gen/schemas/**
 words:
+  - cdylib
   - commitlint
   - nitm
+  - rlib
+  - serde
+  - staticlib
