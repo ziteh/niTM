@@ -3,6 +3,7 @@ import logo from "./assets/logo.svg";
 import "./App.css";
 import { Exiftool } from "./api/exiftool";
 import { TagDatabase } from "./api/tag-database";
+import { FileSys } from "./api/file_sys";
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
@@ -11,7 +12,8 @@ function App() {
 
   async function greet() {
     // Exiftool.getXmpSubjects(name()).then((kw) => console.log(kw));
-    TagDatabase.getTags(name()).then((t) => console.log(t));
+    // TagDatabase.getTags(name()).then((t) => console.log(t));
+    FileSys.list(name()).then((fs) => console.log(fs));
   }
 
   async function exiftool() {
