@@ -10,6 +10,8 @@ ignorePaths:
 words:
   - cdylib
   - commitlint
+  - exiftool
+  - icns
   - nitm
   - rlib
   - serde

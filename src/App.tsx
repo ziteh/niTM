@@ -5,11 +5,16 @@ import "./App.css";
 
 function App() {
   const [greetMsg, setGreetMsg] = createSignal("");
+  const [ver, setVer] = createSignal("");
   const [name, setName] = createSignal("");
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     setGreetMsg(await invoke("greet", { name: name() }));
+  }
+
+  async function exiftool() {
+    setVer(await invoke("exiftool_get_version"));
   }
 
   return (
@@ -28,6 +33,14 @@ function App() {
         </a>
       </div>
       <p>Click on the Tauri, Vite, and Solid logos to learn more.</p>
+
+      <button
+        on:click={() => {
+          exiftool();
+        }}
+      >
+        ver{ver()}
+      </button>
 
       <form
         class="row"
