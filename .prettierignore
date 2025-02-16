@@ -5,3 +5,4 @@ pnpm-lock.yaml
 dist/
 src-tauri/target/
 src-tauri/gen/schemas/
+*.md
