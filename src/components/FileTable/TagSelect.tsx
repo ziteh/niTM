@@ -5,8 +5,8 @@ import OutlinedInput from "@suid/material/OutlinedInput";
 import Select, { SelectChangeEvent } from "@suid/material/Select";
 import { Theme, useTheme } from "@suid/material/styles";
 import { createSignal, onMount } from "solid-js";
-import { tags } from "../../stores/tags";
-import { Exiftool } from "../../api/exiftool";
+import { tags } from "@src/stores/tags";
+import { Exiftool } from "@src/api/exiftool";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
 import suidPlugin from "@suid/vite-plugin";
+import { resolve } from "node:path";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -27,6 +28,11 @@ export default defineConfig(async () => ({
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
+    },
+  },
+  resolve: {
+    alias: {
+      "@src": resolve(__dirname, "./src"),
     },
   },
 }));

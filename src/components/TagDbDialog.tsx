@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogContent, DialogTitle } from "@suid/material";
 import { open } from "@tauri-apps/plugin-dialog";
-import { setTags } from "../stores/tags";
-import { TagDatabase } from "../api/tag-database";
+import { setTags } from "@src/stores/tags";
+import { TagDatabase } from "@src/api/tag-database";
 
 interface Props {
   open: boolean;

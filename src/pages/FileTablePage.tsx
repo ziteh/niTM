@@ -1,9 +1,9 @@
 import { createSignal } from "solid-js";
 import { open } from "@tauri-apps/plugin-dialog";
-import { FileSys } from "../api/file-sys";
+import { FileSys } from "@src/api/file-sys";
 import { Button } from "@suid/material";
-import FileTable from "../components/FileTable";
-import { Exiftool } from "../api/exiftool";
+import FileTable from "@src/components/FileTable";
+import { Exiftool } from "@src/api/exiftool";
 
 const createRow = async (name: string) => {
   const tags = await Exiftool.getXmpSubjects(name);
