@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
 } from "@suid/material";
+import TagSelect from "./TagSelect";
 
 const headers = ["File", "Tags", "Action"];
 
@@ -41,7 +42,9 @@ export default function FileTable(prop: Props) {
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
-                <TableCell>{row.tags}</TableCell>
+                <TableCell>
+                  <TagSelect filename={row.name} />
+                </TableCell>
                 <TableCell>{row.action}</TableCell>
               </TableRow>
             )}

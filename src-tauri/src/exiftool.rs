@@ -40,12 +40,15 @@ pub fn exiftool_get_xmp_subject(filename: &str) -> Result<Vec<String>, String> {
     let result = String::from_utf8(output.stdout)
         .map_err(|e| format!("Failed to parse output as UTF-8: {}", e))?;
 
-    let subjects: Vec<String> = result
-        // .trim_start_matches("Subject:")
-        .trim()
-        .split(",")
-        .map(|s| s.trim().to_string())
-        .collect();
+    let subjects: Vec<String> = if result.is_empty() {
+        Vec::new()
+    } else {
+        result
+            .trim()
+            .split(",")
+            .map(|s| s.trim().to_string())
+            .collect()
+    };
 
     Ok(subjects)
 }
@@ -109,7 +112,7 @@ pub fn exiftool_remove_xmp_subject(filename: &str, tags: Vec<String>) -> Result<
 #[tauri::command]
 pub fn exiftool_clear_xmp_subject(filename: &str) -> Result<(), String> {
     let output = Command::new("exiftool")
-        .arg("-XMP:Subject--")
+        .arg("-XMP:Subject=")
         .arg(filename)
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
