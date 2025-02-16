@@ -1,7 +1,9 @@
+use std::sync::Mutex;
 use tauri::Manager;
 
 mod exiftool;
 mod file_sys;
+mod state;
 mod tag_database;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -14,7 +16,11 @@ fn greet(name: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-            #[cfg(debug_assertions)] // only include this code on debug builds
+            let state = Mutex::new(state::AppState::default());
+            app.manage(state);
+
+            // only include this code on debug builds
+            #[cfg(debug_assertions)]
             {
                 // https://v2.tauri.app/develop/debug/#opening-devtools-programmatically
                 let window = app.get_webview_window("main").unwrap();
@@ -26,6 +32,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             greet,
+            exiftool::exiftool_set_working_path,
             exiftool::exiftool_get_version,
             exiftool::exiftool_get_xmp_subject,
             exiftool::exiftool_add_xmp_subject,

@@ -1,4 +1,9 @@
+use std::path::Path;
 use std::process::Command;
+use std::sync::Mutex;
+use tauri::State;
+
+use crate::state;
 
 #[tauri::command]
 pub fn exiftool_get_version() -> Result<String, String> {
@@ -19,13 +24,30 @@ pub fn exiftool_get_version() -> Result<String, String> {
 }
 
 #[tauri::command]
-pub fn exiftool_get_xmp_subject(filename: &str) -> Result<Vec<String>, String> {
+pub fn exiftool_set_working_path(
+    state: State<Mutex<state::AppState>>,
+    new_dir: String,
+) -> Result<(), String> {
+    let mut app_state = state.lock().map_err(|_e| "Failed to lock state")?;
+    app_state.working_dir = new_dir;
+    println!("New working path: {:?}", app_state.working_dir);
+    Ok(())
+}
+
+#[tauri::command]
+pub fn exiftool_get_xmp_subject(
+    state: State<Mutex<state::AppState>>,
+    filename: &str,
+) -> Result<Vec<String>, String> {
+    let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
+    let dir = Path::new(&app_state.working_dir);
+
     let output = Command::new("exiftool")
         .arg("-XMP:Subject")
         .arg("-veryShort") // Very short output format
         .arg("-tab") // Output in tab-delimited list format
         // .arg("-separator ';'") // Set separator string for list items
-        .arg(filename)
+        .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
@@ -54,10 +76,17 @@ pub fn exiftool_get_xmp_subject(filename: &str) -> Result<Vec<String>, String> {
 }
 
 #[tauri::command]
-pub fn exiftool_add_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(), String> {
+pub fn exiftool_add_xmp_subject(
+    state: State<Mutex<state::AppState>>,
+    filename: &str,
+    tags: Vec<String>,
+) -> Result<(), String> {
     if tags.is_empty() {
         return Err("Tag list cannot be empty".to_string());
     }
+
+    let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
+    let dir = Path::new(&app_state.working_dir);
 
     let mut command = Command::new("exiftool");
 
@@ -66,7 +95,7 @@ pub fn exiftool_add_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(),
     }
 
     let output = command
-        .arg(filename)
+        .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
@@ -82,10 +111,16 @@ pub fn exiftool_add_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(),
 }
 
 #[tauri::command]
-pub fn exiftool_remove_xmp_subject(filename: &str, tags: Vec<String>) -> Result<(), String> {
+pub fn exiftool_remove_xmp_subject(
+    state: State<Mutex<state::AppState>>,
+    filename: &str,
+    tags: Vec<String>,
+) -> Result<(), String> {
     if tags.is_empty() {
         return Err("Tag list cannot be empty".to_string());
     }
+    let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
+    let dir = Path::new(&app_state.working_dir);
 
     let mut command = Command::new("exiftool");
 
@@ -94,7 +129,7 @@ pub fn exiftool_remove_xmp_subject(filename: &str, tags: Vec<String>) -> Result<
     }
 
     let output = command
-        .arg(filename)
+        .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
@@ -110,10 +145,16 @@ pub fn exiftool_remove_xmp_subject(filename: &str, tags: Vec<String>) -> Result<
 }
 
 #[tauri::command]
-pub fn exiftool_clear_xmp_subject(filename: &str) -> Result<(), String> {
+pub fn exiftool_clear_xmp_subject(
+    state: State<Mutex<state::AppState>>,
+    filename: &str,
+) -> Result<(), String> {
+    let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
+    let dir = Path::new(&app_state.working_dir);
+
     let output = Command::new("exiftool")
         .arg("-XMP:Subject=")
-        .arg(filename)
+        .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 

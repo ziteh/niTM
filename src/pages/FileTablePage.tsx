@@ -20,13 +20,11 @@ export default function FileTablePage() {
     if (!dir) {
       return;
     }
-    console.log(dir);
+    await Exiftool.setWorkingDir(dir);
 
     try {
       const { files } = await FileSys.list(dir);
-      const rowData = await Promise.all(
-        files.map((f) => createRow(dir + "/" + f)), // TODO: handle path
-      );
+      const rowData = await Promise.all(files.map((f) => createRow(f)));
       setRows(rowData);
     } catch (err) {
       console.error(err);

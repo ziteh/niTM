@@ -10,6 +10,14 @@ export class Exiftool {
     }
   }
 
+  public static async setWorkingDir(newDir: string) {
+    try {
+      await invoke("exiftool_set_working_path", { newDir });
+    } catch (err) {
+      throw new Error(err as string);
+    }
+  }
+
   public static async getXmpSubjects(filename: string): Promise<string[]> {
     try {
       const subjects = await invoke("exiftool_get_xmp_subject", { filename });
