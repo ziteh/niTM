@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { open } from "@tauri-apps/plugin-dialog";
-import { FileSys } from "../api/file_sys";
+import { FileSys } from "../api/file-sys";
 import { Button } from "@suid/material";
 import FileTable from "../components/FileTable";
 import { Exiftool } from "../api/exiftool";
