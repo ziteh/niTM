@@ -1,10 +1,32 @@
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[derive(serde::Serialize)]
 pub struct FsListResult {
     files: Vec<String>,
     folders: Vec<String>,
+}
+
+fn is_supported_file(filename: &Path) -> bool {
+    // Exiftool XMP
+    if let Some(ext) = filename.extension().and_then(|s| s.to_str()) {
+        matches!(
+            ext.to_lowercase().as_str(),
+            "jpeg"
+                | "jpg"
+                | "tiff"
+                | "png"
+                | "webp"
+                | "raw"
+                | "mp4"
+                | "mov"
+                | "avi"
+                | "mkv"
+                | "xmp"
+        )
+    } else {
+        false
+    }
 }
 
 #[tauri::command]
@@ -26,11 +48,12 @@ pub fn fs_list(dir: &str) -> Result<FsListResult, String> {
     for entry in entries {
         match entry {
             Ok(ent) => {
+                let path_buf: PathBuf = ent.path();
                 let filename = ent.file_name().into_string();
                 if let Ok(name) = filename {
-                    if ent.path().is_file() {
+                    if path_buf.is_file() && is_supported_file(&path_buf) {
                         files.push(name);
-                    } else if ent.path().is_dir() {
+                    } else if path_buf.is_dir() {
                         folders.push(name);
                     }
                 }
