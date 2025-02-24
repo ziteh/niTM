@@ -14,12 +14,14 @@ export default function FileTablePage() {
   const [rows, setRows] = createSignal<
     { name: string; tags: string; action: string }[]
   >([]);
+  const [workingDir, setWorkingDir] = createSignal("");
 
   const handleSelectDir = async () => {
     const dir = await open({ multiple: false, directory: true });
     if (!dir) {
       return;
     }
+    setWorkingDir(dir);
     await Exiftool.setWorkingDir(dir);
 
     try {
@@ -33,7 +35,8 @@ export default function FileTablePage() {
 
   return (
     <>
-      <Button onClick={() => handleSelectDir()}>FS</Button>
+      <Button onClick={() => handleSelectDir()}>Select Folder</Button>
+      <p>{workingDir()}</p>
       <FileTable rows={rows()} />
     </>
   );
