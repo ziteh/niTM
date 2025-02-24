@@ -14,7 +14,16 @@ const DRAWER_WIDTH = 200;
 
 export default function SideBar() {
   const handleSelectFile = async () => {
-    const file = await open({ multiple: false, directory: false });
+    const file = await open({
+      multiple: false,
+      directory: false,
+      filters: [
+        {
+          name: "YAML",
+          extensions: ["yaml", "yml"],
+        },
+      ],
+    });
     if (!file) {
       return;
     }
@@ -53,7 +62,9 @@ export default function SideBar() {
       </List>
 
       <Box sx={{ mt: "auto" }}>
-        <ListItemButton onClick={handleSelectFile}>Update</ListItemButton>
+        <ListItemButton onClick={handleSelectFile}>
+          Select Tag Database
+        </ListItemButton>
       </Box>
     </Drawer>
   );
