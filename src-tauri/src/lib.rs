@@ -19,11 +19,13 @@ pub fn run() {
             let state = Mutex::new(state::AppState::default());
             app.manage(state);
 
+            let window = app.get_webview_window("main").unwrap();
+            let _ = window.set_title(&format!("niTM Ver {}", app.package_info().version));
+
             // only include this code on debug builds
             #[cfg(debug_assertions)]
             {
                 // https://v2.tauri.app/develop/debug/#opening-devtools-programmatically
-                let window = app.get_webview_window("main").unwrap();
                 window.open_devtools();
             }
             Ok(())
