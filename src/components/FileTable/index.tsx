@@ -1,5 +1,6 @@
 import { For } from "solid-js";
 import {
+  Button,
   Paper,
   Table,
   TableBody,
@@ -9,6 +10,7 @@ import {
   TableRow,
 } from "@suid/material";
 import TagSelect from "./TagSelect";
+import { Exiftool } from "@src/api/exiftool";
 
 const headers = ["File", "Tags", "Action"];
 
@@ -23,6 +25,10 @@ interface Props {
 }
 
 export default function FileTable(prop: Props) {
+  const handleClearTags = async (file: string) => {
+    await Exiftool.clearXmpSubjects(file);
+  };
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -45,7 +51,11 @@ export default function FileTable(prop: Props) {
                 <TableCell>
                   <TagSelect filename={row.name} />
                 </TableCell>
-                <TableCell>{row.action}</TableCell>
+                <TableCell>
+                  <Button onClick={() => handleClearTags(row.name)}>
+                    Clear
+                  </Button>
+                </TableCell>
               </TableRow>
             )}
           </For>
