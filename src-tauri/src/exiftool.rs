@@ -95,6 +95,7 @@ pub fn exiftool_add_xmp_subject(
     }
 
     let output = command
+        .arg("-overwrite_original_in_place")
         .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
@@ -129,6 +130,7 @@ pub fn exiftool_remove_xmp_subject(
     }
 
     let output = command
+        .arg("-overwrite_original_in_place")
         .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
@@ -154,6 +156,7 @@ pub fn exiftool_clear_xmp_subject(
 
     let output = Command::new("exiftool")
         .arg("-XMP:Subject=")
+        .arg("-overwrite_original_in_place")
         .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
