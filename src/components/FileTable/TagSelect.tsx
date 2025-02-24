@@ -83,14 +83,16 @@ export default function TagSelect(prop: Props) {
       )}
       MenuProps={MenuProps}
     >
-      {tags.map((tag) => (
-        <MenuItem
-          value={tag.name}
-          style={getStyles(tag.name, selectedTags(), theme)}
-        >
-          {tag.name}
-        </MenuItem>
-      ))}
+      {tags
+        .filter((tag) => tag.rule === "Normal")
+        .map((tag) => (
+          <MenuItem
+            value={tag.name}
+            style={getStyles(tag.name, selectedTags(), theme)}
+          >
+            {tag.name}
+          </MenuItem>
+        ))}
     </Select>
   );
 }
