@@ -28,9 +28,15 @@ fn load_tags_from_yaml(path: &str) -> Result<Vec<TagNode>, String> {
 
 fn flatten_tags(nodes: &[TagNode], parent_name: Option<&str>, output: &mut Vec<FlatTagNode>) {
     for node in nodes {
+        let node_name = if let TagRule::Collection = node.rule {
+            format!("[{}]", node.name)
+        } else {
+            node.name.clone()
+        };
+
         let full_name = match parent_name {
-            Some(parent) => format!("{}/{}", parent, node.name),
-            None => node.name.clone(),
+            Some(parent) => format!("{}/{}", parent, node_name),
+            None => node_name,
         };
 
         output.push(FlatTagNode {
