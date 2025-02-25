@@ -68,8 +68,7 @@ pub fn exiftool_get_xmp_subject(
         .arg("-tab"); // Output in tab-delimited list format
 
     if arg_from_file {
-        write_to_file(&tmp_file_path, &full_path.to_string_lossy())
-            .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+        write_to_file(&tmp_file_path, &full_path.to_string_lossy())?;
 
         command.arg("-@").arg(&tmp_file_path);
     } else {
@@ -137,8 +136,7 @@ pub fn exiftool_add_xmp_subject(
         write_to_file(
             &tmp_file_path,
             &format!("{}\n{}", arg, &full_path.to_string_lossy()),
-        )
-        .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+        )?;
 
         command.arg("-@").arg(&tmp_file_path);
     } else {
@@ -197,8 +195,7 @@ pub fn exiftool_remove_xmp_subject(
         write_to_file(
             &tmp_file_path,
             &format!("{}\n{}", arg, &full_path.to_string_lossy()),
-        )
-        .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+        )?;
 
         command.arg("-@").arg(&tmp_file_path);
     } else {
@@ -245,8 +242,7 @@ pub fn exiftool_clear_xmp_subject(
         .arg("-XMP:Subject="); // Clear subject
 
     if arg_from_file {
-        write_to_file(&tmp_file_path, &full_path.to_string_lossy())
-            .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+        write_to_file(&tmp_file_path, &full_path.to_string_lossy())?;
 
         command.arg("-@").arg(&tmp_file_path);
     } else {
@@ -272,6 +268,8 @@ pub fn exiftool_clear_xmp_subject(
     Ok(())
 }
 
-fn write_to_file(path: &Path, content: &str) -> Result<(), std::io::Error> {
-    File::create(path)?.write_all(content.as_bytes())
+fn write_to_file(file_path: &Path, content: &str) -> Result<(), String> {
+    File::create(file_path)
+        .and_then(|mut file| file.write_all(content.as_bytes()))
+        .map_err(|e| format!("Error writing to tmp file: {}", e))
 }

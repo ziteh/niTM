@@ -1,5 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 
+// Exiftool. Read command-line arguments from file.
+// If you encounter encoding problems, setting it to 'true' may solve the problem, but it may slightly slow down the read/write speed.
 const argFromFile = true;
 
 export class Exiftool {
