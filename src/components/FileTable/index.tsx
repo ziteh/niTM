@@ -30,7 +30,10 @@ export default function FileTable(prop: Props) {
   };
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer
+      component={Paper}
+      sx={{ height: "100%", maxHeight: "75vh", overflow: "auto" }}
+    >
       <Table>
         <TableHead>
           <TableRow>
