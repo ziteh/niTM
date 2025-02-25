@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -69,7 +69,6 @@ pub fn exiftool_get_xmp_subject(
 
     if arg_from_file {
         write_to_file(&tmp_file_path, &full_path.to_string_lossy())?;
-
         command.arg("-@").arg(&tmp_file_path);
     } else {
         command.arg(&full_path.as_os_str());
@@ -243,7 +242,6 @@ pub fn exiftool_clear_xmp_subject(
 
     if arg_from_file {
         write_to_file(&tmp_file_path, &full_path.to_string_lossy())?;
-
         command.arg("-@").arg(&tmp_file_path);
     } else {
         command.arg(&full_path.as_os_str());
@@ -269,7 +267,13 @@ pub fn exiftool_clear_xmp_subject(
 }
 
 fn write_to_file(file_path: &Path, content: &str) -> Result<(), String> {
-    File::create(file_path)
-        .and_then(|mut file| file.write_all(content.as_bytes()))
-        .map_err(|e| format!("Error writing to tmp file: {}", e))
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(file_path)
+        .map_err(|e| format!("Error opening file: {}", e))?;
+
+    file.write_all(content.as_bytes())
+        .map_err(|e| format!("Error writing content: {}", e))
 }
