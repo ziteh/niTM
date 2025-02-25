@@ -6,8 +6,13 @@ import FileTable from "@src/components/FileTable";
 import { Exiftool } from "@src/api/exiftool";
 
 const createRow = async (name: string) => {
-  const tags = await Exiftool.getXmpSubjects(name);
-  return { name, tags: tags.join(","), action: "A" };
+  try {
+    const tags = await Exiftool.getXmpSubjects(name);
+    return { name, tags: tags.join(","), action: "A" };
+  } catch (err) {
+    console.warn(err);
+    return { name, tags: [], action: "A" };
+  }
 };
 
 export default function FileTablePage() {

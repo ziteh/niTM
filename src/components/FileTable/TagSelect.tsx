@@ -56,9 +56,13 @@ export default function TagSelect(prop: Props) {
   };
 
   onMount(async () => {
-    const oriTags = await Exiftool.getXmpSubjects(prop.filename);
-    if (oriTags.length > 0) {
-      setSelectedTags(oriTags);
+    try {
+      const oriTags = await Exiftool.getXmpSubjects(prop.filename);
+      if (oriTags.length > 0) {
+        setSelectedTags(oriTags);
+      }
+    } catch (err) {
+      console.warn(err);
     }
   });
 
