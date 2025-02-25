@@ -1,9 +1,15 @@
+use std::fs::File;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Mutex;
 use tauri::State;
 
 use crate::state;
+
+const TMP_FILENAME: &str = ".exiftool_tmp.txt";
+const ARG_ENCODING: &str = "-charset filename=utf8"; // Specify encoding for special characters
+const ARG_OVERWRITE: &str = "-overwrite_original_in_place"; // Overwrite original by copying tmp file
 
 #[tauri::command]
 pub fn exiftool_get_version() -> Result<String, String> {
@@ -46,24 +52,43 @@ pub fn exiftool_set_working_path(
 pub fn exiftool_get_xmp_subject(
     state: State<Mutex<state::AppState>>,
     filename: &str,
+    arg_from_file: bool,
 ) -> Result<Vec<String>, String> {
     let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
     let dir = Path::new(&app_state.working_dir);
+    let full_path = dir.join(filename);
+    let tmp_file_path = dir.join(TMP_FILENAME);
 
-    let output = Command::new("exiftool")
+    let mut command = Command::new("exiftool");
+    command
+        .arg(ARG_ENCODING)
         .arg("-XMP:Subject")
-        .arg("-veryShort") // Very short output format
-        .arg("-tab") // Output in tab-delimited list format
         // .arg("-separator ';'") // Set separator string for list items
-        .arg(dir.join(filename))
+        .arg("-veryShort") // Very short output format
+        .arg("-tab"); // Output in tab-delimited list format
+
+    if arg_from_file {
+        write_to_file(&tmp_file_path, &full_path.to_string_lossy())
+            .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+
+        command.arg("-@").arg(&tmp_file_path);
+    } else {
+        command.arg(&full_path.as_os_str());
+    }
+
+    let output = command
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
+    if arg_from_file {
+        let _ = std::fs::remove_file(&tmp_file_path);
+    }
+
     if !output.status.success() {
-        let stderr_msg = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
-            "Command failed with status {}: {}",
-            output.status, stderr_msg
+            "Command failed: {} ({:?})",
+            String::from_utf8_lossy(&output.stderr),
+            full_path
         ));
     }
 
@@ -88,6 +113,7 @@ pub fn exiftool_add_xmp_subject(
     state: State<Mutex<state::AppState>>,
     filename: &str,
     tags: Vec<String>,
+    arg_from_file: bool,
 ) -> Result<(), String> {
     if tags.is_empty() {
         return Err("Tag list cannot be empty".to_string());
@@ -95,24 +121,47 @@ pub fn exiftool_add_xmp_subject(
 
     let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
     let dir = Path::new(&app_state.working_dir);
+    let full_path = dir.join(filename);
+    let tmp_file_path = dir.join(TMP_FILENAME);
 
     let mut command = Command::new("exiftool");
+    command.arg(ARG_ENCODING).arg(ARG_OVERWRITE);
 
-    for tag in tags {
-        command.arg(format!("-XMP:Subject+={}", tag));
+    if arg_from_file {
+        let arg = tags
+            .iter()
+            .map(|tag| format!("-XMP:Subject+={}", tag))
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        write_to_file(
+            &tmp_file_path,
+            &format!("{}\n{}", arg, &full_path.to_string_lossy()),
+        )
+        .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+
+        command.arg("-@").arg(&tmp_file_path);
+    } else {
+        for tag in tags {
+            command.arg(format!("-XMP:Subject+={}", tag));
+        }
+
+        command.arg(&full_path.as_os_str());
     }
 
     let output = command
-        .arg("-overwrite_original_in_place")
-        .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
+    if arg_from_file {
+        let _ = std::fs::remove_file(&tmp_file_path);
+    }
+
     if !output.status.success() {
-        let stderr_msg = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
-            "Command failed with status {}: {}",
-            output.status, stderr_msg
+            "Command failed: {} ({:?})",
+            String::from_utf8_lossy(&output.stderr),
+            full_path
         ));
     }
 
@@ -124,30 +173,54 @@ pub fn exiftool_remove_xmp_subject(
     state: State<Mutex<state::AppState>>,
     filename: &str,
     tags: Vec<String>,
+    arg_from_file: bool,
 ) -> Result<(), String> {
     if tags.is_empty() {
         return Err("Tag list cannot be empty".to_string());
     }
+
     let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
     let dir = Path::new(&app_state.working_dir);
+    let full_path = dir.join(filename);
+    let tmp_file_path = dir.join(TMP_FILENAME);
 
     let mut command = Command::new("exiftool");
+    command.arg(ARG_ENCODING).arg(ARG_OVERWRITE);
 
-    for tag in tags {
-        command.arg(format!("-XMP:Subject-={}", tag));
+    if arg_from_file {
+        let arg = tags
+            .iter()
+            .map(|tag| format!("-XMP:Subject-={}", tag))
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        write_to_file(
+            &tmp_file_path,
+            &format!("{}\n{}", arg, &full_path.to_string_lossy()),
+        )
+        .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+
+        command.arg("-@").arg(&tmp_file_path);
+    } else {
+        for tag in tags {
+            command.arg(format!("-XMP:Subject-={}", tag));
+        }
+        command.arg(&full_path.as_os_str());
     }
 
     let output = command
-        .arg("-overwrite_original_in_place")
-        .arg(dir.join(filename))
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
+    if arg_from_file {
+        let _ = std::fs::remove_file(&tmp_file_path);
+    }
+
     if !output.status.success() {
-        let stderr_msg = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
-            "Command failed with status {}: {}",
-            output.status, stderr_msg
+            "Command failed: {} ({:?})",
+            String::from_utf8_lossy(&output.stderr),
+            full_path
         ));
     }
 
@@ -158,27 +231,47 @@ pub fn exiftool_remove_xmp_subject(
 pub fn exiftool_clear_xmp_subject(
     state: State<Mutex<state::AppState>>,
     filename: &str,
+    arg_from_file: bool,
 ) -> Result<(), String> {
     let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
+    let tmp_file_path = dir.join(TMP_FILENAME);
 
-    let output = Command::new("exiftool")
-        .arg("-XMP:Subject=")
-        .arg("-overwrite_original_in_place")
-        .arg(&full_path.as_os_str())
+    let mut command = Command::new("exiftool");
+    command
+        .arg(ARG_ENCODING)
+        .arg(ARG_OVERWRITE)
+        .arg("-XMP:Subject="); // Clear subject
+
+    if arg_from_file {
+        write_to_file(&tmp_file_path, &full_path.to_string_lossy())
+            .map_err(|e| format!("Error writing to tmp file: {}", e))?;
+
+        command.arg("-@").arg(&tmp_file_path);
+    } else {
+        command.arg(&full_path.as_os_str());
+    }
+
+    let output = command
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
+    if arg_from_file {
+        let _ = std::fs::remove_file(&tmp_file_path);
+    }
+
     if !output.status.success() {
-        let stderr_msg = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
-            "Command failed with status {}: {} ({:?})",
-            output.status,
-            stderr_msg,
-            &full_path.as_os_str()
+            "Command failed: {} ({:?})",
+            String::from_utf8_lossy(&output.stderr),
+            full_path
         ));
     }
 
     Ok(())
+}
+
+fn write_to_file(path: &Path, content: &str) -> Result<(), std::io::Error> {
+    File::create(path)?.write_all(content.as_bytes())
 }
