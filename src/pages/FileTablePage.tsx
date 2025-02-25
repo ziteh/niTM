@@ -11,7 +11,7 @@ const createRow = async (name: string) => {
     return { name, tags: tags.join(","), action: "A" };
   } catch (err) {
     console.warn(err);
-    return { name, tags: [], action: "A" };
+    return { name, tags: "", action: "A" };
   }
 };
 

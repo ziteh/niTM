@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Mutex;
 use tauri::State;
@@ -28,9 +28,17 @@ pub fn exiftool_set_working_path(
     state: State<Mutex<state::AppState>>,
     new_dir: String,
 ) -> Result<(), String> {
+    let path = PathBuf::from(new_dir);
+    if !path.exists() {
+        return Err("Provided path does not exist".to_string());
+    }
+    if !path.is_dir() {
+        return Err("Provided path is not a directory".to_string());
+    }
+
     let mut app_state = state.lock().map_err(|_e| "Failed to lock state")?;
-    app_state.working_dir = new_dir;
-    println!("New working path: {:?}", app_state.working_dir);
+    app_state.working_dir = path.display().to_string();
+    println!("New working dir: {:?}", app_state.working_dir);
     Ok(())
 }
 
@@ -153,19 +161,22 @@ pub fn exiftool_clear_xmp_subject(
 ) -> Result<(), String> {
     let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
     let dir = Path::new(&app_state.working_dir);
+    let full_path = dir.join(filename);
 
     let output = Command::new("exiftool")
         .arg("-XMP:Subject=")
         .arg("-overwrite_original_in_place")
-        .arg(dir.join(filename))
+        .arg(&full_path.as_os_str())
         .output()
         .map_err(|e| format!("Failed to execute command: {}", e))?;
 
     if !output.status.success() {
         let stderr_msg = String::from_utf8_lossy(&output.stderr);
         return Err(format!(
-            "Command failed with status {}: {}",
-            output.status, stderr_msg
+            "Command failed with status {}: {} ({:?})",
+            output.status,
+            stderr_msg,
+            &full_path.as_os_str()
         ));
     }
 
