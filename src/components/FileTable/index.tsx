@@ -26,7 +26,7 @@ function ImageCell(prop: { path: string }) {
 
   const handleReadImage = async () => {
     try {
-      const img = await FileSys.readImage("D:/test.png");
+      const img = await FileSys.readImage("test.png");
       setImageSrc(img);
     } catch (err) {
       console.warn(err);
