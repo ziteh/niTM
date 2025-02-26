@@ -1,4 +1,4 @@
-use std::sync::Mutex;
+use std::{path::PathBuf, sync::Mutex};
 use tauri::Manager;
 
 mod exiftool;
@@ -12,11 +12,21 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+fn get_app_dir() -> Result<PathBuf, String> {
+    let mut dir = dirs::data_local_dir().ok_or("Can't get local dir")?;
+    dir.push("niTM"); // App folder
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-            let state = Mutex::new(state::AppState::default());
+            let state = Mutex::new(state::AppState {
+                working_dir: "".to_string(),
+                app_dir: get_app_dir().unwrap(),
+            });
             app.manage(state);
 
             let window = app.get_webview_window("main").unwrap();

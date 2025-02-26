@@ -58,7 +58,7 @@ pub fn exiftool_get_xmp_subject(
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    let app_dir = get_app_dir().unwrap();
+    let app_dir = Path::new(&app_state.app_dir);
     let tmp_file_path = app_dir.join(TMP_FILENAME);
 
     let mut command = Command::new("exiftool");
@@ -123,7 +123,7 @@ pub fn exiftool_add_xmp_subject(
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    let app_dir = get_app_dir().unwrap();
+    let app_dir = Path::new(&app_state.app_dir);
     let tmp_file_path = app_dir.join(TMP_FILENAME);
 
     let mut command = Command::new("exiftool");
@@ -184,7 +184,7 @@ pub fn exiftool_remove_xmp_subject(
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    let app_dir = get_app_dir().unwrap();
+    let app_dir = Path::new(&app_state.app_dir);
     let tmp_file_path = app_dir.join(TMP_FILENAME);
 
     let mut command = Command::new("exiftool");
@@ -239,7 +239,7 @@ pub fn exiftool_clear_xmp_subject(
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    let app_dir = get_app_dir().unwrap();
+    let app_dir = Path::new(&app_state.app_dir);
     let tmp_file_path = app_dir.join(TMP_FILENAME);
 
     let mut command = Command::new("exiftool");
@@ -284,11 +284,4 @@ fn write_to_file(file_path: &Path, content: &str) -> Result<(), String> {
 
     file.write_all(content.as_bytes())
         .map_err(|e| format!("Error writing content: {}", e))
-}
-
-fn get_app_dir() -> Result<PathBuf, String> {
-    let mut dir = dirs::data_local_dir().ok_or("Can't get local dir")?;
-    dir.push("niTM"); // App folder
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    Ok(dir)
 }
