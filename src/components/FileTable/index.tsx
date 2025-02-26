@@ -37,7 +37,9 @@ function ImageCell(prop: { file: string }) {
     handleReadImage();
   });
 
-  return <>{imageSrc() && <img src={imageSrc()} alt={prop.file} />}</>;
+  return (
+    <>{imageSrc() && <img src={imageSrc()} alt={prop.file} width={150} />}</>
+  );
 }
 
 interface Props {

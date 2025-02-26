@@ -87,7 +87,16 @@ pub fn fs_read_image_base64(
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    resize_image_to_base64(&full_path, max_width, max_height, 80.0)
+    // resize_image_to_base64(&full_path, max_width, max_height, 80.0)
+
+    // Read origin image
+    match fs::read(&full_path) {
+        Ok(data) => Ok(format!(
+            "data:image/jpeg;base64,{}",
+            general_purpose::STANDARD.encode(data)
+        )),
+        Err(err) => Err(format!("Reading error: {}", err)),
+    }
 }
 
 pub fn resize_image_to_base64(
