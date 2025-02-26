@@ -1,11 +1,14 @@
-use base64;
 use base64::{engine::general_purpose, Engine as _};
-use image::{GenericImageView, ImageFormat};
+use image::{DynamicImage, GenericImageView, ImageFormat};
 use std::fs;
-use std::io::Cursor;
+use std::fs::File;
+use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::State;
+
+use fast_image_resize as fr;
+use webp::Encoder;
 
 use crate::state;
 
@@ -84,42 +87,61 @@ pub fn fs_read_image_base64(
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    resize_image_to_base64(&full_path, max_width, max_height)
+    resize_image_to_base64(&full_path, max_width, max_height, 80.0)
 }
 
 pub fn resize_image_to_base64(
     path: &Path,
     max_width: u32,
     max_height: u32,
+    quality: f32,
 ) -> Result<String, String> {
-    match fs::read(path) {
-        Ok(data) => {
-            let img = image::load_from_memory(&data).map_err(|e| format!("Error :{}", e))?;
+    let file = File::open(path).map_err(|e| format!("Open file error: {}", e))?;
+    let reader = BufReader::new(file);
 
-            let (orig_width, orig_height) = img.dimensions();
+    let img = image::load(
+        reader,
+        ImageFormat::from_path(path).unwrap_or(ImageFormat::Jpeg),
+    )
+    .map_err(|e| format!("Loading image error: {}", e))?;
 
-            let (new_width, new_height) = if orig_width > max_width || orig_height > max_height {
-                let ratio = (max_width as f64 / orig_width as f64)
-                    .min(max_height as f64 / orig_height as f64);
-                (
-                    (orig_width as f64 * ratio) as u32,
-                    (orig_height as f64 * ratio) as u32,
-                )
-            } else {
-                (orig_width, orig_height)
-            };
+    let (ori_width, ori_height) = img.dimensions();
+    let (new_width, new_height) = if ori_width > max_width || ori_height > max_height {
+        let ratio =
+            (max_width as f64 / ori_width as f64).min(max_height as f64 / ori_height as f64);
+        (
+            (ori_width as f64 * ratio) as u32,
+            (ori_height as f64 * ratio) as u32,
+        )
+    } else {
+        (ori_width, ori_height)
+    };
 
-            let resized = img.resize(new_width, new_height, image::imageops::FilterType::Lanczos3);
+    let src_image = fr::images::Image::from_vec_u8(
+        ori_width,
+        ori_height,
+        img.to_rgba8().into_raw(),
+        fr::PixelType::U8x4,
+    )
+    .map_err(|e| format!("Convert error: {:?}", e))?;
 
-            let mut buf = Cursor::new(Vec::new());
-            resized
-                .write_to(&mut buf, ImageFormat::WebP)
-                .map_err(|e| format!("Convert error: {}", e))?;
+    let mut dst_image = fr::images::Image::new(new_width, new_height, fr::PixelType::U8x4);
 
-            let base64 = general_purpose::STANDARD.encode(buf.into_inner());
+    let mut resizer = fr::Resizer::new();
+    resizer
+        .resize(&src_image, &mut dst_image, None)
+        .map_err(|e| format!("Resize error: {:?}", e))?;
 
-            Ok(format!("data:image/webp;base64,{}", base64))
-        }
-        Err(err) => Err(format!("Reading error: {}", err)),
-    }
+    let resized_img = DynamicImage::ImageRgba8(
+        image::RgbaImage::from_raw(new_width, new_height, dst_image.into_vec())
+            .ok_or("Resized convert error")?,
+    );
+
+    let encoder =
+        Encoder::from_image(&resized_img).map_err(|e| format!("WebP encoding error: {}", e))?;
+    let webp_data = encoder.encode(quality);
+
+    // Convert to base64
+    let base64 = general_purpose::STANDARD.encode(webp_data.to_vec());
+    Ok(format!("data:image/webp;base64,{}", base64))
 }

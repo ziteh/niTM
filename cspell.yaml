@@ -13,6 +13,7 @@ words:
   - exiftool
   - icns
   - nitm
+  - resizer
   - rlib
   - serde
   - staticlib
