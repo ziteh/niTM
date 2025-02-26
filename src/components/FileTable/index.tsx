@@ -21,12 +21,12 @@ interface Row {
   action: string;
 }
 
-function ImageCell(prop: { path: string }) {
+function ImageCell(prop: { file: string }) {
   const [imageSrc, setImageSrc] = createSignal<string | undefined>(undefined);
 
   const handleReadImage = async () => {
     try {
-      const img = await FileSys.readImage("test.png");
+      const img = await FileSys.readImage(prop.file);
       setImageSrc(img);
     } catch (err) {
       console.warn(err);
@@ -37,7 +37,7 @@ function ImageCell(prop: { path: string }) {
     handleReadImage();
   });
 
-  return <>{imageSrc() && <img src={imageSrc()} alt={prop.path} />}</>;
+  return <>{imageSrc() && <img src={imageSrc()} alt={prop.file} />}</>;
 }
 
 interface Props {
@@ -69,7 +69,7 @@ export default function FileTable(prop: Props) {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell>
-                  <ImageCell path={row.name} />
+                  <ImageCell file={row.name} />
                 </TableCell>
                 <TableCell component="th" scope="row">
                   {row.name}

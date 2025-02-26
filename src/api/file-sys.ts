@@ -15,9 +15,17 @@ export class FileSys {
     }
   }
 
-  public static async readImage(filename: string): Promise<string> {
+  public static async readImage(
+    filename: string,
+    maxWidth: number = 150,
+    maxHeight: number = 150,
+  ): Promise<string> {
     try {
-      const base64 = await invoke<string>("fs_read_image_base64", { filename });
+      const base64 = await invoke<string>("fs_read_image_base64", {
+        filename,
+        maxWidth,
+        maxHeight,
+      });
       return base64;
     } catch (err) {
       throw new Error(err as string);

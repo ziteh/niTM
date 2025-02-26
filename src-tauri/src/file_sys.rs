@@ -1,12 +1,13 @@
-use crate::state;
 use base64;
 use base64::{engine::general_purpose, Engine as _};
-use image::{DynamicImage, GenericImageView, ImageFormat};
+use image::{GenericImageView, ImageFormat};
 use std::fs;
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use tauri::State;
+
+use crate::state;
 
 #[derive(serde::Serialize)]
 pub struct FsListResult {
@@ -76,12 +77,14 @@ pub fn fs_list(dir: &str) -> Result<FsListResult, String> {
 pub fn fs_read_image_base64(
     state: State<Mutex<state::AppState>>,
     filename: String,
+    max_width: u32,
+    max_height: u32,
 ) -> Result<String, String> {
     let app_state = state.lock().map_err(|_e| "Failed to lock state")?;
     let dir = Path::new(&app_state.working_dir);
     let full_path = dir.join(filename);
 
-    resize_image_to_base64(&full_path, 200, 200)
+    resize_image_to_base64(&full_path, max_width, max_height)
 }
 
 pub fn resize_image_to_base64(
