@@ -1,4 +1,4 @@
-import { For } from "solid-js";
+import { createSignal, For, onMount } from "solid-js";
 import {
   Button,
   Paper,
@@ -11,13 +11,33 @@ import {
 } from "@suid/material";
 import TagSelect from "./TagSelect";
 import { Exiftool } from "@src/api/exiftool";
+import { FileSys } from "@src/api/file-sys";
 
-const headers = ["File", "Tags", "Action"];
+const headers = ["Preview", "File", "Tags", "Action"];
 
 interface Row {
   name: string;
   tags: string;
   action: string;
+}
+
+function ImageCell(prop: { path: string }) {
+  const [imageSrc, setImageSrc] = createSignal<string | undefined>(undefined);
+
+  const handleReadImage = async () => {
+    try {
+      const img = await FileSys.readImage("D:/test.png");
+      setImageSrc(img);
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  onMount(() => {
+    handleReadImage();
+  });
+
+  return <>{imageSrc() && <img src={imageSrc()} alt={prop.path} />}</>;
 }
 
 interface Props {
@@ -48,6 +68,9 @@ export default function FileTable(prop: Props) {
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
+                <TableCell>
+                  <ImageCell path={row.name} />
+                </TableCell>
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>

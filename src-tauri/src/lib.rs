@@ -42,6 +42,7 @@ pub fn run() {
             exiftool::exiftool_clear_xmp_subject,
             tag_database::tag_db_get_tags,
             file_sys::fs_list,
+            file_sys::fs_read_image_base64,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

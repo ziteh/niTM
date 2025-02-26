@@ -1,4 +1,8 @@
+use base64;
+use base64::{engine::general_purpose, Engine as _};
+use image::{DynamicImage, GenericImageView, ImageFormat};
 use std::fs;
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
 
 #[derive(serde::Serialize)]
@@ -63,4 +67,46 @@ pub fn fs_list(dir: &str) -> Result<FsListResult, String> {
     }
 
     Ok(FsListResult { files, folders })
+}
+
+#[tauri::command]
+pub fn fs_read_image_base64(path: String) -> Result<String, String> {
+    resize_image_to_base64(&path, 200, 200)
+}
+
+pub fn resize_image_to_base64(
+    path: &str,
+    max_width: u32,
+    max_height: u32,
+) -> Result<String, String> {
+    match fs::read(path) {
+        Ok(data) => {
+            let img = image::load_from_memory(&data).map_err(|e| format!("Error :{}", e))?;
+
+            let (orig_width, orig_height) = img.dimensions();
+
+            let (new_width, new_height) = if orig_width > max_width || orig_height > max_height {
+                let ratio = (max_width as f64 / orig_width as f64)
+                    .min(max_height as f64 / orig_height as f64);
+                (
+                    (orig_width as f64 * ratio) as u32,
+                    (orig_height as f64 * ratio) as u32,
+                )
+            } else {
+                (orig_width, orig_height)
+            };
+
+            let resized = img.resize(new_width, new_height, image::imageops::FilterType::Lanczos3);
+
+            let mut buf = Cursor::new(Vec::new());
+            resized
+                .write_to(&mut buf, ImageFormat::WebP)
+                .map_err(|e| format!("Convert error: {}", e))?;
+
+            let base64 = general_purpose::STANDARD.encode(buf.into_inner());
+
+            Ok(format!("data:image/webp;base64,{}", base64))
+        }
+        Err(err) => Err(format!("Reading error: {}", err)),
+    }
 }

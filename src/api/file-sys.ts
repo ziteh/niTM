@@ -14,4 +14,13 @@ export class FileSys {
       throw new Error(err as string);
     }
   }
+
+  public static async readImage(path: string): Promise<string> {
+    try {
+      const base64 = await invoke<string>("fs_read_image_base64", { path });
+      return base64;
+    } catch (err) {
+      throw new Error(err as string);
+    }
+  }
 }
