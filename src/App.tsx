@@ -4,6 +4,7 @@ import CssBaseline from "@suid/material/CssBaseline";
 import "./App.css";
 import FileTablePage from "@src/pages/FileTablePage";
 import SideBar from "@src/components/SideBar";
+import EditorInfo from "@src/components/EditorInfo";
 import { Box } from "@suid/material";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Box component="main" class="container" sx={{ flexGrow: 1, p: 3 }}>
           <FileTablePage />
         </Box>
+        <EditorInfo />
       </Box>
     </ThemeProvider>
   );
