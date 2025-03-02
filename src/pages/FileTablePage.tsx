@@ -5,20 +5,8 @@ import { Button } from "@suid/material";
 import FileTable from "@src/components/FileTable";
 import { Exiftool } from "@src/api/exiftool";
 
-const createRow = async (name: string) => {
-  try {
-    const tags = await Exiftool.getXmpSubjects(name);
-    return { name, tags: tags.join(","), action: "A" };
-  } catch (err) {
-    console.warn(err);
-    return { name, tags: "", action: "A" };
-  }
-};
-
 export default function FileTablePage() {
-  const [rows, setRows] = createSignal<
-    { name: string; tags: string; action: string }[]
-  >([]);
+  const [files, setFiles] = createSignal<string[]>([]);
   const [workingDir, setWorkingDir] = createSignal("");
 
   const handleSelectDir = async () => {
@@ -31,8 +19,8 @@ export default function FileTablePage() {
 
     try {
       const { files } = await FileSys.list(dir);
-      const rowData = await Promise.all(files.map((f) => createRow(f)));
-      setRows(rowData);
+      setFiles(files);
+      console.log(files);
     } catch (err) {
       console.error(err);
     }
@@ -42,7 +30,7 @@ export default function FileTablePage() {
     <>
       <Button onClick={() => handleSelectDir()}>Select Folder</Button>
       <p>{workingDir()}</p>
-      <FileTable rows={rows()} />
+      <FileTable files={files()} />
     </>
   );
 }

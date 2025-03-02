@@ -1,4 +1,4 @@
-import { createSignal, For, onMount } from "solid-js";
+import { createEffect, createSignal, For, onMount } from "solid-js";
 import {
   Button,
   Paper,
@@ -13,14 +13,9 @@ import {
 import { Exiftool } from "@src/api/exiftool";
 import { FileSys } from "@src/api/file-sys";
 import TagChips from "../TagChips";
+import { selectedFiles, setSelectedFiles } from "@src/stores/selectedFiles";
 
 const headers = ["Select", "Preview", "File", "Tags", "Action"];
-
-interface Row {
-  name: string;
-  tags: string[];
-  action: string;
-}
 
 interface FileInfo {
   name: string;
@@ -48,16 +43,11 @@ function ImageCell(prop: { file: string }) {
   );
 }
 
-interface Props {
-  rows: Row[];
-}
-
-export default function FileTable(prop: Props) {
-  const [selectedFiles, setSelectedFiles] = createSignal<string[]>([]);
+export default function FileTable(prop: { files: string[] }) {
   const [fileInfo, setFileInfo] = createSignal<FileInfo[]>([]);
 
   const isAllSelected = () =>
-    prop.rows.length > 0 && selectedFiles().length === prop.rows.length;
+    prop.files.length > 0 && selectedFiles.length === prop.files.length;
 
   const toggleSelection = (file: string) => {
     setSelectedFiles((prev) =>
@@ -69,7 +59,7 @@ export default function FileTable(prop: Props) {
     if (isAllSelected()) {
       setSelectedFiles([]); // Deselect all
     } else {
-      setSelectedFiles(prop.rows.map((row) => row.name)); // Select all
+      setSelectedFiles(prop.files.map((file) => file)); // Select all
     }
   };
 
@@ -77,11 +67,13 @@ export default function FileTable(prop: Props) {
     await Exiftool.clearXmpSubjects(file);
   };
 
-  onMount(async () => {
+  createEffect(async () => {
     const infos: FileInfo[] = await Promise.all(
-      prop.rows.map(async (row) => {
-        const tags = await Exiftool.getXmpSubjects(row.name);
-        return { name: row.name, tags };
+      prop.files.map(async (file) => {
+        const tags = await Exiftool.getXmpSubjects(file);
+        const info: FileInfo = { name: file, tags };
+        console.log(info);
+        return info;
       }),
     );
 
@@ -112,7 +104,7 @@ export default function FileTable(prop: Props) {
               >
                 <TableCell>
                   <Checkbox
-                    checked={selectedFiles().includes(info.name)}
+                    checked={selectedFiles.includes(info.name)}
                     onChange={() => toggleSelection(info.name)}
                   />
                 </TableCell>
