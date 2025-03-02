@@ -1,4 +1,6 @@
 import { Drawer, List, ListItem, ListSubheader } from "@suid/material";
+import { selectedFiles } from "@src/stores/selectedFiles";
+import { selectedTags, setSelectedTags } from "@src/stores/selectedTags";
 
 const DRAWER_WIDTH = 240;
 
@@ -21,9 +23,9 @@ export default function EditorInfo() {
       }}
     >
       <List sx={{ flexGrow: 1 }}>
-        <ListSubheader>Info</ListSubheader>
+        <ListSubheader>Files</ListSubheader>
         <ListItem>Selected File Info</ListItem>
-        <ListItem>More Details...</ListItem>
+        <ListSubheader>Tags</ListSubheader>
       </List>
     </Drawer>
   );
