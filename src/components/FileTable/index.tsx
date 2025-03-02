@@ -75,6 +75,17 @@ export default function FileTable(prop: Props) {
     console.log("Selected files:", selectedFiles());
   };
 
+  const handleUpdateTags = async (filename: string, newTags: string[]) => {
+    try {
+      await Exiftool.clearXmpSubjects(filename);
+      if (newTags.length > 0) {
+        await Exiftool.addXmpSubjects(filename, newTags);
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
   return (
     <TableContainer
       component={Paper}
@@ -120,7 +131,10 @@ export default function FileTable(prop: Props) {
                   {row.name}
                 </TableCell>
                 <TableCell>
-                  <TagSelect filename={row.name} />
+                  <TagSelect
+                    filename={row.name}
+                    onChange={(newTags) => handleUpdateTags(row.name, newTags)}
+                  />
                 </TableCell>
                 <TableCell>
                   <Button onClick={() => handleClearTags(row.name)}>

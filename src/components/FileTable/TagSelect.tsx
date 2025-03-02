@@ -31,6 +31,7 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 
 interface Props {
   filename: string;
+  onChange?: (newTags: string[]) => void;
 }
 
 export default function TagSelect(prop: Props) {
@@ -44,14 +45,8 @@ export default function TagSelect(prop: Props) {
 
     const newTags = Array.isArray(value) ? value : value.split(",");
     setSelectedTags(newTags);
-
-    try {
-      await Exiftool.clearXmpSubjects(prop.filename);
-      if (newTags.length > 0) {
-        await Exiftool.addXmpSubjects(prop.filename, newTags);
-      }
-    } catch (err) {
-      console.warn(err);
+    if (prop.onChange) {
+      prop.onChange(newTags);
     }
   };
 
