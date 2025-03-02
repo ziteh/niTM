@@ -30,13 +30,13 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 }
 
 interface Props {
-  filename?: string;
+  tags: string[];
   onChange?: (newTags: string[]) => void;
 }
 
 export default function TagSelect(prop: Props) {
   const theme = useTheme();
-  const [selectedTags, setSelectedTags] = createSignal<string[]>([]);
+  // const [selectedTags, setSelectedTags] = createSignal<string[]>([]);
 
   const handleChange = async (event: SelectChangeEvent<string | string[]>) => {
     const {
@@ -44,31 +44,31 @@ export default function TagSelect(prop: Props) {
     } = event;
 
     const newTags = Array.isArray(value) ? value : value.split(",");
-    setSelectedTags(newTags);
+    // setSelectedTags(newTags);
     if (prop.onChange) {
       prop.onChange(newTags);
     }
   };
 
-  onMount(async () => {
-    if (!prop.filename) {
-      return;
-    }
+  // onMount(async () => {
+  //   if (!prop.filename) {
+  //     return;
+  //   }
 
-    try {
-      const oriTags = await Exiftool.getXmpSubjects(prop.filename);
-      if (oriTags.length > 0) {
-        setSelectedTags(oriTags);
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  });
+  //   try {
+  //     const oriTags = await Exiftool.getXmpSubjects(prop.filename);
+  //     if (oriTags.length > 0) {
+  //       setSelectedTags(oriTags);
+  //     }
+  //   } catch (err) {
+  //     console.warn(err);
+  //   }
+  // });
 
   return (
     <Select
       multiple
-      value={selectedTags()}
+      value={prop.tags}
       onChange={handleChange}
       input={<OutlinedInput label="Chip" />}
       renderValue={(selected) => (
@@ -87,11 +87,11 @@ export default function TagSelect(prop: Props) {
       MenuProps={MenuProps}
     >
       {tags
-        .filter((tag) => tag.rule === "Normal")
+        .filter((tag) => tag.rule === "Normal") // Only Normal tags
         .map((tag) => (
           <MenuItem
             value={tag.name}
-            style={getStyles(tag.name, selectedTags(), theme)}
+            style={getStyles(tag.name, prop.tags, theme)}
           >
             {tag.name}
           </MenuItem>
