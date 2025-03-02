@@ -49,6 +49,7 @@ interface Props {
 
 export default function FileTable(prop: Props) {
   const [selectedFiles, setSelectedFiles] = createSignal<string[]>([]);
+  const [selectedTags, setSelectedTags] = createSignal<string[]>([]);
 
   const isAllSelected = () =>
     prop.rows.length > 0 && selectedFiles().length === prop.rows.length;
@@ -72,7 +73,10 @@ export default function FileTable(prop: Props) {
   };
 
   const handleSelectedFiles = () => {
-    console.log("Selected files:", selectedFiles());
+    const tags = selectedTags();
+    const files = selectedFiles();
+    console.log("Selected files:", files);
+    files.forEach((file) => handleUpdateTags(file, tags));
   };
 
   const handleUpdateTags = async (filename: string, newTags: string[]) => {
@@ -91,15 +95,13 @@ export default function FileTable(prop: Props) {
       component={Paper}
       sx={{ height: "100%", maxHeight: "75vh", overflow: "auto" }}
     >
-      {/* <Button variant="contained" sx={{ margin: 1 }} onClick={toggleSelectAll}>
-        {isAllSelected() ? "Deselect All" : "Select All"}
-      </Button> */}
+      <TagSelect onChange={(newTags) => setSelectedTags(newTags)} />
       <Button
         variant="outlined"
         sx={{ margin: 1 }}
         onClick={handleSelectedFiles}
       >
-        Selected Files
+        Apply to Selected Files
       </Button>
       <Table>
         <TableHead>

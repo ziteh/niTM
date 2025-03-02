@@ -30,7 +30,7 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 }
 
 interface Props {
-  filename: string;
+  filename?: string;
   onChange?: (newTags: string[]) => void;
 }
 
@@ -51,6 +51,10 @@ export default function TagSelect(prop: Props) {
   };
 
   onMount(async () => {
+    if (!prop.filename) {
+      return;
+    }
+
     try {
       const oriTags = await Exiftool.getXmpSubjects(prop.filename);
       if (oriTags.length > 0) {
