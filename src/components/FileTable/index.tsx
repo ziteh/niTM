@@ -8,12 +8,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Checkbox,
 } from "@suid/material";
 import TagSelect from "./TagSelect";
 import { Exiftool } from "@src/api/exiftool";
 import { FileSys } from "@src/api/file-sys";
 
-const headers = ["Preview", "File", "Tags", "Action"];
+const headers = ["Select", "Preview", "File", "Tags", "Action"];
 
 interface Row {
   name: string;
@@ -47,8 +48,31 @@ interface Props {
 }
 
 export default function FileTable(prop: Props) {
+  const [selectedFiles, setSelectedFiles] = createSignal<string[]>([]);
+
+  const isAllSelected = () =>
+    prop.rows.length > 0 && selectedFiles().length === prop.rows.length;
+
+  const toggleSelection = (file: string) => {
+    setSelectedFiles((prev) =>
+      prev.includes(file) ? prev.filter((f) => f !== file) : [...prev, file],
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (isAllSelected()) {
+      setSelectedFiles([]); // Deselect all
+    } else {
+      setSelectedFiles(prop.rows.map((row) => row.name)); // Select all
+    }
+  };
+
   const handleClearTags = async (file: string) => {
     await Exiftool.clearXmpSubjects(file);
+  };
+
+  const handleSelectedFiles = () => {
+    console.log("Selected files:", selectedFiles());
   };
 
   return (
@@ -56,10 +80,23 @@ export default function FileTable(prop: Props) {
       component={Paper}
       sx={{ height: "100%", maxHeight: "75vh", overflow: "auto" }}
     >
+      {/* <Button variant="contained" sx={{ margin: 1 }} onClick={toggleSelectAll}>
+        {isAllSelected() ? "Deselect All" : "Select All"}
+      </Button> */}
+      <Button
+        variant="outlined"
+        sx={{ margin: 1 }}
+        onClick={handleSelectedFiles}
+      >
+        Selected Files
+      </Button>
       <Table>
         <TableHead>
           <TableRow>
-            <For each={headers}>
+            <TableCell>
+              <Checkbox checked={isAllSelected()} onChange={toggleSelectAll} />
+            </TableCell>
+            <For each={headers.slice(1)}>
               {(header) => <TableCell>{header}</TableCell>}
             </For>
           </TableRow>
@@ -70,6 +107,12 @@ export default function FileTable(prop: Props) {
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
+                <TableCell>
+                  <Checkbox
+                    checked={selectedFiles().includes(row.name)}
+                    onChange={() => toggleSelection(row.name)}
+                  />
+                </TableCell>
                 <TableCell>
                   <ImageCell file={row.name} />
                 </TableCell>
