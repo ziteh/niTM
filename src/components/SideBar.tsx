@@ -10,7 +10,7 @@ import { tags, setTags } from "@src/stores/tags";
 import { TagDatabase } from "@src/api/tag-database";
 import { open } from "@tauri-apps/plugin-dialog";
 
-const DRAWER_WIDTH = 200;
+const DRAWER_WIDTH = 280;
 
 export default function SideBar() {
   const handleSelectFile = async () => {
