@@ -10,7 +10,7 @@ import {
   TableRow,
   Checkbox,
 } from "@suid/material";
-import TagSelect from "./TagSelect";
+import TagSelect from "../TagSelect";
 import { Exiftool } from "@src/api/exiftool";
 import { FileSys } from "@src/api/file-sys";
 
