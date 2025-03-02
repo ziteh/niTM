@@ -10,16 +10,21 @@ import {
   TableRow,
   Checkbox,
 } from "@suid/material";
-import TagSelect from "../TagSelect";
 import { Exiftool } from "@src/api/exiftool";
 import { FileSys } from "@src/api/file-sys";
+import TagChips from "../TagChips";
 
 const headers = ["Select", "Preview", "File", "Tags", "Action"];
 
 interface Row {
   name: string;
-  tags: string;
+  tags: string[];
   action: string;
+}
+
+interface FileInfo {
+  name: string;
+  tags: string[];
 }
 
 function ImageCell(prop: { file: string }) {
@@ -49,7 +54,7 @@ interface Props {
 
 export default function FileTable(prop: Props) {
   const [selectedFiles, setSelectedFiles] = createSignal<string[]>([]);
-  const [selectedTags, setSelectedTags] = createSignal<string[]>([]);
+  const [fileInfo, setFileInfo] = createSignal<FileInfo[]>([]);
 
   const isAllSelected = () =>
     prop.rows.length > 0 && selectedFiles().length === prop.rows.length;
@@ -72,37 +77,22 @@ export default function FileTable(prop: Props) {
     await Exiftool.clearXmpSubjects(file);
   };
 
-  const handleSelectedFiles = () => {
-    const tags = selectedTags();
-    const files = selectedFiles();
-    console.log("Selected files:", files);
-    files.forEach((file) => handleUpdateTags(file, tags));
-  };
+  onMount(async () => {
+    const infos: FileInfo[] = await Promise.all(
+      prop.rows.map(async (row) => {
+        const tags = await Exiftool.getXmpSubjects(row.name);
+        return { name: row.name, tags };
+      }),
+    );
 
-  const handleUpdateTags = async (filename: string, newTags: string[]) => {
-    try {
-      await Exiftool.clearXmpSubjects(filename);
-      if (newTags.length > 0) {
-        await Exiftool.addXmpSubjects(filename, newTags);
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
+    setFileInfo(infos);
+  });
 
   return (
     <TableContainer
       component={Paper}
       sx={{ height: "100%", maxHeight: "75vh", overflow: "auto" }}
     >
-      <TagSelect onChange={(newTags) => setSelectedTags(newTags)} />
-      <Button
-        variant="outlined"
-        sx={{ margin: 1 }}
-        onClick={handleSelectedFiles}
-      >
-        Apply to Selected Files
-      </Button>
       <Table>
         <TableHead>
           <TableRow>
@@ -115,31 +105,28 @@ export default function FileTable(prop: Props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          <For each={prop.rows}>
-            {(row) => (
+          <For each={fileInfo()}>
+            {(info) => (
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell>
                   <Checkbox
-                    checked={selectedFiles().includes(row.name)}
-                    onChange={() => toggleSelection(row.name)}
+                    checked={selectedFiles().includes(info.name)}
+                    onChange={() => toggleSelection(info.name)}
                   />
                 </TableCell>
                 <TableCell>
-                  <ImageCell file={row.name} />
+                  <ImageCell file={info.name} />
                 </TableCell>
                 <TableCell component="th" scope="row">
-                  {row.name}
+                  {info.name}
                 </TableCell>
                 <TableCell>
-                  <TagSelect
-                    filename={row.name}
-                    onChange={(newTags) => handleUpdateTags(row.name, newTags)}
-                  />
+                  <TagChips tags={info.tags} />
                 </TableCell>
                 <TableCell>
-                  <Button onClick={() => handleClearTags(row.name)}>
+                  <Button onClick={() => handleClearTags(info.name)}>
                     Clear
                   </Button>
                 </TableCell>
